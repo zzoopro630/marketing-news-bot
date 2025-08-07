@@ -1,0 +1,30 @@
+name: Daily Marketing News
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # UTC 기준 02:00 (한국시간 11:00)
+  workflow_dispatch:  # 수동 실행도 가능
+
+jobs:
+  send-news:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        pip install requests
+        
+    - name: Run news collector
+      env:
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+        RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+      run: python news_collector.py
